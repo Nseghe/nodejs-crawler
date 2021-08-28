@@ -1,0 +1,14 @@
+{
+    "name": "nodejs-crawler",
+    "version": "1.0.0",
+    "description": "Web crawler to extract and print URLS in a website",
+    "main": "src/main.js",
+    "author": "Nseghe Essiet",
+    "license": "GNU",
+    "scripts": {
+    },
+    "dependencies": {
+      "got": "^11.8.2",
+      "cheerio": "^1.0.0-rc.10"
+    }
+  }
