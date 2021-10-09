@@ -1,6 +1,6 @@
 {
     "name": "nodejs-crawler",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "Web crawler to extract and print URLS in a website",
     "main": "src/main.js",
     "author": "Nseghe Essiet",
@@ -9,10 +9,9 @@
         "webcrawler": "src/index.js"
     },
     "dependencies": {
-        "got": "11.8.2",
+        "axios": "0.22.0",
         "cheerio": "1.0.0-rc.10",
         "commander": "8.2.0",
-        "request": "2.88.2",
         "url-parse": "1.5.3"
     }
   }
