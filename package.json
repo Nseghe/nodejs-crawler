@@ -2,11 +2,11 @@
     "name": "nodejs-crawler",
     "version": "0.1.0",
     "description": "Web crawler to extract and print URLS in a website",
-    "main": "src/main.js",
+    "main": "src/index.js",
     "author": "Nseghe Essiet",
     "license": "GNU",
     "bin": {
-        "webcrawler": "src/index.js"
+        "crawl": "src/index.js"
     },
     "dependencies": {
         "axios": "0.22.0",
