@@ -1,57 +1,59 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const URL = require('url-parse');
-const { parentPort } = require('worker_threads');
+const { URL } = require('url');
 
-function checkDomain(baseUrl, urlString) {
-    var url = new URL(urlString);
-    if (url.hostname == baseUrl.hostname) {
-        return true;
+class WebCrawlerWorker {
+    constructor ({workerThreads}) {
+        this.workerThreads = workerThreads;
     }
-    return false;
-}
 
-function collectInternalLinks($, baseUrl) {
-    var relativeLinks = $("a[href^='/']");
-    var absoluteLinks = $("a[href^='http']");
-    relativeLinks.each(function() {
-        var urlString = baseUrl.protocol + "//" + baseUrl.hostname + $(this).attr('href');
-        console.log(urlString);
-        parentPort.postMessage(urlString);
-    })
-    absoluteLinks.each(function() {
-        var urlString = $(this).attr('href');
-        if (checkDomain(baseUrl, urlString)) {
-            parentPort.postMessage(urlString);
+    visitPageAndCollectLinks(processedBaseUrlHostName, urlString) {
+        const self = this;
+        const config = { 
+            maxRedirects: 20
         }
-    })
-    parentPort.postMessage('completed');
+        return axios.get(urlString, config)
+        .then((response) => {
+            if (response.status != 200) {
+                return self.workerThreads.parentPort.postMessage('completed');
+            }
+            const baseUrl = response.request.res.responseUrl;
+            const $ = cheerio.load(response.data);
+            return self._collectLinks($, processedBaseUrlHostName, baseUrl);
+        })
+        .catch((error) => {
+            return self.workerThreads.parentPort.postMessage('completed');
+        })
+    }
+    
+    _collectLinks($, processedBaseUrlHostName, baseUrl) {
+        this._getAbsoluteLinks($, processedBaseUrlHostName);
+        this._getRelativeLinks($, processedBaseUrlHostName, baseUrl);
+        this.workerThreads.parentPort.postMessage('completed');
+    }
+    
+    _getAbsoluteLinks($, processedBaseUrlHostName) {
+        const self = this;
+        const absoluteLinks = $('a').filter(function() {
+            return $(this).attr('href').includes('.' + processedBaseUrlHostName);
+        });
+        absoluteLinks.each(function() {
+            const urlString = $(this).prop('href');
+            self.workerThreads.parentPort.postMessage(urlString);
+        });
+    }
+    
+    _getRelativeLinks($, processedBaseUrlHostName, baseUrl) {
+        const self = this;
+        const relativeLinks = $("a[href^='/'], a[href^='./'], a[href^='../']");
+        relativeLinks.each(function() {
+            const urlString = new URL($(this).attr('href'), baseUrl);
+            if (urlString.hostname === processedBaseUrlHostName ||
+                urlString.hostname.includes('.' + processedBaseUrlHostName)) {
+                self.workerThreads.parentPort.postMessage(urlString.href);
+            }
+        });
+    }
 }
 
-function visitPage(baseUrl, urlString) {
-    axios.get(urlString, {
-        maxRedirects: 10
-    })
-    .then((response) => {
-        if (response.status != 200) {
-            parentPort.postMessage('completed');
-            return;
-        }
-        var $ = cheerio.load(response.data);
-        collectInternalLinks($, baseUrl);
-    })
-    .catch((error) => {
-        parentPort.postMessage('completed');
-    })
-}
-
-parentPort.on('message', (data) => {
-    visitPage(data.baseUrl, data.urlString);
-});
-
-
-module.exports = {
-    checkDomain,
-    collectInternalLinks,
-    visitPage
-}
+module.exports = WebCrawlerWorker;
