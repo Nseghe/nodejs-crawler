@@ -20,5 +20,5 @@ npm test
 crawl -n 3 https://www.testwebsite.com
 ```
 
-    - The -n flag specifies the number of workers used in crawling (in this case - 3).
-    - The last value is the website to be crawled (in this case - https://www.testwebsite.com)
+- The -n flag specifies the number of workers used in crawling (in this case - 3).
+- The last value is the website to be crawled (in this case - https://www.testwebsite.com)
