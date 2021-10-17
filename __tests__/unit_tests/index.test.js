@@ -6,34 +6,27 @@ jest.mock('../../src/web.crawler.main');
 describe('init', function() {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.spyOn(console, 'error').mockReturnValue();
 	});
 	afterEach(() => {
 		process.argv = process.argv.slice(0, 2);
-	})
+	});
 
 	test('initializes the main thread when correct inputs are provided', function() {
 		// Arrange
 		process.argv[2] = '-n';
 		process.argv[3] = '3';
 		process.argv[4] = 'https://www.testwebsite.com/';
-		WebCrawlerMain.mockImplementation(() => {
-			return 
-		})
-		// console.log(WebCrawlerMain.getMockImplementation());
 
         // Act
         initialize(process.argv);
 
         // Assert
-        // expect(worker_threads.parentPort.on.mock.calls.length).toBe(1);
+        expect(console.error.mock.calls.length).toBe(0);
 	});
 	test('throws error when "-n" flag is not provided', function() {
 		// Arrange
 		process.argv[2] = 'https://www.testwebsite.com/';
-		jest.spyOn(console, 'error').mockImplementation(() => {})
-		WebCrawlerMain.mockImplementation(() => {
-			return 
-		})
 
         // Act
         initialize(process.argv);
@@ -45,10 +38,6 @@ describe('init', function() {
 		// Arrange
 		process.argv[2] = '-n';
 		process.argv[3] = 'https://www.testwebsite.com/';
-		jest.spyOn(console, 'error').mockImplementation(() => {})
-		WebCrawlerMain.mockImplementation(() => {
-			return 
-		})
 
         // Act
         initialize(process.argv);
@@ -60,10 +49,6 @@ describe('init', function() {
 		// Arrange
 		process.argv[2] = '-n';
 		process.argv[3] = '3';
-		jest.spyOn(console, 'error').mockImplementation(() => {})
-		WebCrawlerMain.mockImplementation(() => {
-			return 
-		})
 
         // Act
         initialize(process.argv);
@@ -76,10 +61,6 @@ describe('init', function() {
 		process.argv[2] = '-n';
 		process.argv[3] = '3';
 		process.argv[4] = 'invalid_url';
-		jest.spyOn(console, 'error').mockImplementation(() => {})
-		WebCrawlerMain.mockImplementation(() => {
-			return 
-		})
 
         // Act
         initialize(process.argv);

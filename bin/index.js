@@ -3,8 +3,6 @@
 const { URL } = require('url');
 const WebCrawlerMain = require('../src/web.crawler.main');
 
-var IS_EXECUTING = (require.main === module);
-
 function init(args) {
     try {
         const nRequired = 'Invalid Syntax. Please specify the number of worker threads to be used for crawling using the -n flag.\n' +
@@ -18,6 +16,7 @@ function init(args) {
             throw SyntaxError(nRequired);
         if (!args[4])
             throw SyntaxError(urlRequired);
+        
         const baseUrl = new URL(urlString);
         const workerFile = './src/worker.js';
         const webCrawlerMain = new WebCrawlerMain({ baseUrl, numOfWorkers, workerFile });
@@ -32,7 +31,6 @@ function init(args) {
     }
 }
 
-if (IS_EXECUTING)
-    init(process.argv);
-else
-    module.exports = init;
+init(process.argv);
+
+module.exports = init;

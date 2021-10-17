@@ -36,8 +36,8 @@ class WebCrawlerMain {
             this.pagesVisited[processedUrlString] = true;
             console.log(urlString);
             this.runTask({
-                'urlString': urlString,
-                'processedBaseUrlHostName': this.processedBaseUrlHostName
+                urlString: urlString,
+                processedBaseUrlHostName: this.processedBaseUrlHostName
             });            
         }
         
